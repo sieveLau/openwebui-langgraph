@@ -3,6 +3,13 @@ def strip_think(message: str) -> str:
         message = message.split("</think>")[1].lstrip('\n')
     return message
 
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+def ask_ai(prompt: str, llm, feed_dict: dict) -> str:
+    chain = ChatPromptTemplate.from_template(prompt) | llm | StrOutputParser()
+    response = strip_think(chain.invoke(feed_dict))
+    return response
+
 from transformers import AutoTokenizer
 import os
 tokenizer_path = os.environ.get("LOCAL_TOKENIZER_PATH", "deepseek-ai/DeepSeek-R1")
@@ -15,14 +22,18 @@ def embed_message(documents, vector_store, spliter) -> list[str]:
     all_splits = spliter.split_documents(documents)
     return vector_store.add_documents(documents=all_splits)
 
-def init_embed_vector_spliter(embeder_url="http://127.0.0.1:11434", embed_model="bge-m3", persist_directory = None, seperated=True, separators='\n', chunk_size=2000, chunk_overlap=200, add_start_index=True):
-    from langchain_ollama import OllamaEmbeddings
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
+def init_embed_vector_spliter(embeder_url, api_key, persist_directory = None, seperated=True, separators='\n', chunk_size=1000, chunk_overlap=0, add_start_index=True):
+    from langchain_openai import OpenAIEmbeddings
+    from langchain_text_splitters import CharacterTextSplitter
+    # from langchain_text_splitters import RecursiveCharacterTextSplitter
     from langchain_chroma import Chroma
     import uuid
-    embed = OllamaEmbeddings(
+    embed = OpenAIEmbeddings(
         base_url=embeder_url,
-        model=embed_model
+        model=os.environ.get('LOCAL_EMBED_TOKENIZER_PATH'),
+        embedding_ctx_length=8100,
+        api_key=api_key,
+        tiktoken_enabled=False
     )
     collection_id = uuid.uuid4().hex if seperated else "global"
     vector_store = Chroma(
@@ -30,10 +41,12 @@ def init_embed_vector_spliter(embeder_url="http://127.0.0.1:11434", embed_model=
         embedding_function=embed,
         persist_directory=persist_directory
     )
-    text_splitter = RecursiveCharacterTextSplitter(
-        separators=separators,
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained(os.environ.get("LOCAL_TOKENIZER_PATH"),local_files_only=True)
+    text_splitter = CharacterTextSplitter.from_huggingface_tokenizer(
         chunk_size=chunk_size,  # chunk size (characters)
         chunk_overlap=chunk_overlap,  # chunk overlap (characters)
+        tokenizer=tokenizer,
         add_start_index=add_start_index,  # track index in original document
     )
     return embed, vector_store, text_splitter, collection_id
