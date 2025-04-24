@@ -1,4 +1,6 @@
-import init_env
+from globalsource import resource
+from init_env import env
+
 from typing import Annotated
 from langgraph.graph import START, StateGraph, END
 from typing_extensions import List, TypedDict
@@ -30,7 +32,7 @@ class FastAPIState(BaseModel):
 # ============ Define state for application END ============
 from langchain.chat_models import init_chat_model
 import os
-llm = init_chat_model(model="deepseek-r1", model_provider="openai", base_url=os.environ.get('BASE_URL','https://api.openai.com/v1'), max_tokens=NUM_PREDICT)
+llm = init_chat_model(model="deepseek-r1", model_provider="openai", base_url=env.get('BASE_URL'), max_tokens=NUM_PREDICT)
 
 def latest_user_message(state: GraphState):
     for message in reversed(state["messages"]):

@@ -3,7 +3,6 @@ from langgraph_agent import graph, GraphState, FastAPIState
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-import component_helpers
 
 app = FastAPI(
     title="API for openwebui-pipelines",

@@ -1,9 +1,9 @@
 from langchain_core.documents import Document
-import os
+from init_env import env
 
 def search(query: str) -> list[Document]:
     """Search the web for realtime information."""
-    TAVILY_KEY = os.environ.get('TAVILY_KEY', None)
+    TAVILY_KEY = env.get('TAVILY_KEY')
     if not TAVILY_KEY:
         print("Tavily Key is missing.")
         raise Exception("Tavily Key is missing.")
