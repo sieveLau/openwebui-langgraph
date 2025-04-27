@@ -1,5 +1,8 @@
 from globalsource import resource
 
+def rules_to_string(rules: list[str]):
+    return '\n'.join(f'{i}. {content}' for i, content in enumerate(rules, 1))
+
 def strip_think(message: str) -> str:
     if "</think>" in message:
         message = message.split("</think>")[1].lstrip('\n')
