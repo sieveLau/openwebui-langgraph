@@ -14,7 +14,6 @@ from datetime import timezone
 
 from tool_search import web_search_returning_string
 
-NUM_PREDICT = 6*1024
 # init api key
 
 # ============ Define state for application BGN ============
@@ -32,9 +31,6 @@ class FastAPIState(BaseModel):
     messages: Annotated[list, add_messages]
 
 # ============ Define state for application END ============
-from langchain.chat_models import init_chat_model
-import os
-llm = init_chat_model(model="deepseek-r1", model_provider="openai", base_url=env.get('BASE_URL'), max_tokens=NUM_PREDICT)
 
 def latest_user_message(state: GraphState):
     for message in reversed(state["messages"]):
@@ -77,12 +73,12 @@ def generate(state: GraphState):
         full_messages,
         token_counter=tiktoken_counter,
         strategy="last",
-        max_tokens=16*1024-NUM_PREDICT-50,
+        max_tokens=16*1024-resource.NUM_PREDICT-50,
         start_on="human",
         end_on=("human", "tool"),
         include_system=True,
     )
-    response = llm.invoke(full_messages)
+    response = resource.get_main_model().invoke(full_messages)
     return {"messages": state["messages"] + [response], "answer": response.content}
 
 SEQUENCE = [

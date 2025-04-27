@@ -3,9 +3,8 @@ from globalsource import resource
 from langchain_core.documents import Document
 def generate_query(user_question: str) -> str:
     from datetime import datetime, timezone
-    from openai import OpenAI
     from component_helpers import strip_think
-    client = OpenAI(api_key=env.get('OPENAI_API_KEY'),base_url = env.get('BASE_URL'))
+    client = resource.get_openai_model()
     NOW = datetime.now().astimezone(timezone.utc)
     rules = [
         f"If user's input relates to date, now it is {NOW.strftime('%Y-%m-%d %H:%M:%S UTC%z')}, a {NOW.strftime('%A')}.",
@@ -85,8 +84,8 @@ Relevance Score: {}
     
 
 if __name__ == "__main__":
-    # query = "What is the capital of France?"
-    query = "What is the weather like in Paris today? I'm in New York, use my time."
+    query = "What is the capital of France?"
+    # query = "What is the weather like in Paris today? I'm in New York, use my time."
     # documents = web_search_function(query)
     # print("\n\n".join(doc.page_content for doc in documents))
     # print(web_search_returning_string(query))
