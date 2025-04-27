@@ -13,3 +13,4 @@ langchain-chroma
 langchain-ollama
 langchain-openai
 transformers
+jinja2

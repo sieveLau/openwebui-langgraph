@@ -1,3 +1,5 @@
+from init_env import env
+
 import json
 from langgraph_agent import graph, GraphState, FastAPIState
 from fastapi import FastAPI
@@ -12,7 +14,8 @@ app = FastAPI(
 @app.post("/openwebui-pipelines/api")
 async def main(inputs: FastAPIState):
     response = await graph.ainvoke(inputs)
-    print(response)
+    if env.get('DEBUG'):
+        print(response)
     return response
 
 @app.post("/openwebui-pipelines/api/stream")
@@ -28,7 +31,7 @@ async def stream(inputs: FastAPIState):
                 "chroma_ids": []
             }
             first_token = True
-            print(f"\nReceived inputs: {inputs}\n")
+            if env.get('DEBUG'): print(f"\nReceived inputs: {inputs}\n")
             async for msg, metadata in graph.astream(input=state, stream_mode="messages"):
                 if msg.content:
                     if metadata.get('langgraph_node', '') != 'generate':

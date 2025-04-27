@@ -19,6 +19,8 @@ class _environment:
             api_key = self.store.get("OPENAI_API_KEY")
             if not api_key:
                 raise ValueError("OPENAI_API_KEY is missing")
+            if 'DEBUG' not in self.store:
+                self.store['DEBUG'] = False
 
     def get(self, key):
         ret = self.store.get(key)
