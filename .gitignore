@@ -1,7 +1,1 @@
-.env
-*.pyc
-__pycache__
-
-*.example
-check_sensitive.py
-test*
+*
