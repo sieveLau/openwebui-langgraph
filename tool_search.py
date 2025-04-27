@@ -47,6 +47,18 @@ def search(query: str):
     _ = embed_message(documents, vector_store, resource.get_text_splitter())
     return vector_store
 
+def _fake_search(query: str):
+    from component_websearch import _fake_search as web_search
+    from component_helpers import embed_message
+    from langchain_chroma import Chroma
+    vector_store = Chroma(
+        collection_name="example",
+        embedding_function=resource.get_embed()
+    )
+    documents = web_search(query=query)
+    _ = embed_message(documents, vector_store, resource.get_text_splitter())
+    return vector_store
+
 def retrieve(query: str, vector_store):
     retrieved_docs = vector_store.similarity_search(query, k=3)
     # print("------\nRetrieved documents:")
@@ -81,6 +93,26 @@ Relevance Score: {}
 """.format(i, doc.metadata['title'], doc.metadata['source'], doc.metadata['relevance'], doc.page_content)
     # print(constructor)
     return constructor
+
+
+def _fake_web_search_returning_string(user_question: str) -> str:
+    query = generate_query(user_question)
+    v = _fake_search(query)
+    constructor = ""
+    for i, doc in enumerate(retrieve(query, v), start=1):
+        constructor += """## Source ID: {}
+
+Title: {}
+
+URL: {}
+
+Relevance Score: {}
+
+{}
+
+""".format(i, doc.metadata['title'], doc.metadata['source'], doc.metadata['relevance'], doc.page_content)
+    # print(constructor)
+    return constructor
     
 
 if __name__ == "__main__":
@@ -89,4 +121,4 @@ if __name__ == "__main__":
     # documents = web_search_function(query)
     # print("\n\n".join(doc.page_content for doc in documents))
     # print(web_search_returning_string(query))
-    print(generate_query(query))
+    print(_fake_web_search_returning_string(query))
