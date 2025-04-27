@@ -7,8 +7,10 @@ from typing_extensions import List, TypedDict
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph.message import add_messages
-from component_helpers import tiktoken_counter
+from component_helpers import tiktoken_counter, rules_to_string
 from langchain_core.messages import AIMessage, HumanMessage, trim_messages
+
+from datetime import timezone
 
 from tool_search import web_search_returning_string
 
@@ -54,7 +56,15 @@ def replace_last_human_message(history, new_messages):
 # Define application steps
 def generate(state: GraphState):
     from datetime import datetime
-    template = f"You are an assistant for question-answering tasks. Today is {datetime.now().strftime('%Y-%m-%d, %A')}."+" Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know.\nQuestion: {question}\nContext: {context}\nAnswer:"
+    NOW = datetime.now().astimezone(timezone.utc)
+    rules = [
+        f"If user's input relates to date, now it is {NOW.strftime('%Y-%m-%d %H:%M:%S UTC%z')}, a {NOW.strftime('%A')}.",
+        f"If user's question contains location, you should adjust time based on their location. For example, if user is in HK, you should add 8 hours to the time given in rule 1.",
+        "However, if user's question is about news in some location, you should adjust time based on that location, unless he requires you to based on his location. For example, if user asks about news in New York today and indicates his location is in HK, you should adjust time to New York's local time instead of HK's. You should judge whether the user wants you to adjust time based on their location. For example, if UTC is 2025-04-26 18:00 and user says today means HK time, although London is UTC+0 which is 2025-04-26, HK is 2025-04-27 and 04-27 is what you should use.",
+        'If the question is related to date, include yyyy-mm-dd in the query.',
+        "Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know."
+    ]
+    template = "You are an assistant for question-answering tasks. Here are the rules:\n"+rules_to_string(rules)+"\n\nQuestion: {question}\n\nContext: {context}\n\nAnswer:"
     prompt = ChatPromptTemplate.from_template(template)
     docs_content = web_search_returning_string(state["question"])
     # 生成 final user message（这会返回 ChatPromptValue）
