@@ -1,6 +1,8 @@
 from init_env import env
 from globalsource import resource
 from langchain_core.documents import Document
+from langchain_core.tools import tool
+
 def generate_query(user_question: str) -> str:
     from datetime import datetime, timezone
     from component_helpers import strip_think
@@ -75,8 +77,10 @@ def web_search_function(user_question: str) -> list[Document]:
     return retrieve(query, v)
     # return []
 
-def web_search_returning_string(user_question: str) -> str:
-    query = generate_query(user_question)
+@tool("web_search")
+def web_search_returning_string(question: str) -> str:
+    """Searches the web for information and returns a string containing the results."""
+    query = generate_query(question)
     v = search(query)
     constructor = ""
     for i, doc in enumerate(retrieve(query, v), start=1):
@@ -94,9 +98,10 @@ Relevance Score: {}
     # print(constructor)
     return constructor
 
-
-def _fake_web_search_returning_string(user_question: str) -> str:
-    query = generate_query(user_question)
+@tool("web_search")
+def _fake_web_search_returning_string(question: str) -> str:
+    """Searches the web for information and returns a string containing the results."""
+    query = generate_query(question)
     v = _fake_search(query)
     constructor = ""
     for i, doc in enumerate(retrieve(query, v), start=1):
@@ -113,7 +118,6 @@ Relevance Score: {}
 """.format(i, doc.metadata['title'], doc.metadata['source'], doc.metadata['relevance'], doc.page_content)
     # print(constructor)
     return constructor
-    
 
 if __name__ == "__main__":
     query = "What is the capital of France?"
@@ -121,4 +125,7 @@ if __name__ == "__main__":
     # documents = web_search_function(query)
     # print("\n\n".join(doc.page_content for doc in documents))
     # print(web_search_returning_string(query))
-    print(_fake_web_search_returning_string(query))
+    print(_fake_web_search_returning_string.name)
+    print(_fake_web_search_returning_string.description)
+    print(_fake_web_search_returning_string.args)
+    # print(_fake_web_search_returning_string(query))
