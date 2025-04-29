@@ -1,7 +1,7 @@
 from init_env import env
 
 import json
-from langgraph_agent import graph, GraphState, FastAPIState
+from langgraph_agent import app as graph, State
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,43 +12,30 @@ app = FastAPI(
     )
 
 @app.post("/openwebui-pipelines/api")
-async def main(inputs: FastAPIState):
+async def main(inputs: State):
     response = await graph.ainvoke(inputs)
     if env.get('DEBUG'):
         print(response)
     return response
 
 @app.post("/openwebui-pipelines/api/stream")
-async def stream(inputs: FastAPIState):
+async def stream(inputs: State):
     async def event_stream():
         try:
-            state: GraphState = {
-                "messages": inputs.messages,
-                "question": "",  # graph会自动处理 question 和 query，无需手动设置
-                "query": "",     # 同上
-                "context": [],                        # 初始 context 为空
-                "answer": "",                          # 初始 answer 为空
-                "chroma_ids": []
-            }
-            first_token = True
             if env.get('DEBUG'): print(f"\nReceived inputs: {inputs}\n")
-            async for msg, metadata in graph.astream(input=state, stream_mode="messages"):
+            async for msg, metadata in graph.astream(input=inputs, stream_mode="messages"):
                 if msg.content:
-                    if metadata.get('langgraph_node', '') != 'generate':
+                    if metadata.get('langgraph_node', '') != 'agent':
                         continue
                     # 构造 SSE 格式数据
                     data = {
                         "choices": [{
                             "delta": {
                                 "role": "assistant",
-                                "content": "<think>\n" + msg.content if first_token else msg.content
+                                "content": msg.content
                             }
                         }]
                     }
-                    
-                    # 第一行插入 <think>，后续不再插入
-                    if first_token:
-                        first_token = False
                     
                     # 编码为 SSE 格式
                     yield f"data: {json.dumps(data)}\n\n"

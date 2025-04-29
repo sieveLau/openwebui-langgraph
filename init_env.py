@@ -1,5 +1,9 @@
 class _environment:
     def __init__(self):
+        self.load()
+    def reload(self):
+        self.load()
+    def load(self):
         self.store = {}
         import os
         if os.path.exists(".env"):
@@ -27,5 +31,7 @@ class _environment:
         if ret is None:
             raise KeyError(f"Key {key} not found in environment")
         return ret
+    def get_all(self):
+        return self.store.copy()
 
 env = _environment()

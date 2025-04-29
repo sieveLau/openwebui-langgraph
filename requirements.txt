@@ -5,12 +5,11 @@ pydantic
 python-dotenv
 requests
 typing-extensions
-google-api-python-client
 tavily-python
 langchain
 langchain-community
-langchain-chroma
-langchain-ollama
 langchain-openai
 transformers
 jinja2
+pytz
+redis
