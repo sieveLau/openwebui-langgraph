@@ -41,7 +41,7 @@ def call_model(state: State):
         start_on="human",
         include_system=True,
     )
-    print(convert_to_openai_messages(messages))
+    # print(convert_to_openai_messages(messages))
     response = model_with_tools.invoke(messages)
     return {"messages": [response]}
 

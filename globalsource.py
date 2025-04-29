@@ -19,7 +19,7 @@ class _Resource:
     ]
 
     def __init__(self):
-        self.NUM_PREDICT = 4 * 1024
+        self.NUM_PREDICT = 6 * 1024
         self.main_model = init_chat_model(
             model=env.get("MAIN_MODEL_NAME"),
             model_provider="openai",
