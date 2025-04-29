@@ -1,3 +1,4 @@
+from time import sleep
 from init_env import env
 
 from langchain_openai import OpenAIEmbeddings
@@ -49,8 +50,22 @@ class _Resource:
         self.main_model_tokenizer = AutoTokenizer.from_pretrained(
             env.get("LOCAL_TOKENIZER_PATH"), local_files_only=True
         )
+        
+        self._redis_client = redis.from_url(env.get('REDIS_URL'))
+        # on this machine, redis will be up after a few seconds
+        while not self._redis_client.ping():
+            sleep(5)
 
-        self.vector_store = Chroma(collection_name=self.GLOBAL_VOLATILE_INDEX_NAME , embedding_function=self.embed, persist_directory='./chroma')
+        config = RedisConfig(
+            index_name=self.GLOBAL_VOLATILE_INDEX_NAME,
+            redis_client=self._redis_client,
+            metadata_schema=[
+                {"name": "title", "type": "text"},
+                {"name": "source", "type": "text"}
+            ],
+        )
+
+        self.vector_store = RedisVectorStore(self.embed, config=config, ttl=7*24*3600)
 
     def get_embed(self):
         return self.embed
@@ -66,7 +81,9 @@ class _Resource:
         ids = self.vector_store.add_documents(all_splits)
         return ids
     def search_documents(self, query, k=2):
-        docs = self.vector_store.similarity_search(query, k)
+        docs, scores = zip(*self.vector_store.similarity_search_with_score(query, k))
+        for doc, score in zip(docs, scores):
+            doc.metadata["score"] = score
         return docs
     
     def get_retriver(self, k: int):
