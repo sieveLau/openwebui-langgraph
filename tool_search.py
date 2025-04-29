@@ -69,9 +69,13 @@ Title: {}
 
 URL: {}
 
+Relevance Score: {}
+
+Added Date: {}
+
 {}
 
-""".format(i, doc.metadata['title'], doc.metadata['source'], doc.page_content)
+""".format(i, doc.metadata['title'], doc.metadata['source'], doc.metadata['score'], doc.metadata['add_date'], doc.page_content)
     # print(constructor)
     return constructor
 
@@ -88,9 +92,13 @@ Title: {}
 
 URL: {}
 
+Relevance Score: {}
+
+Added Date: {}
+
 {}
 
-""".format(i, doc.metadata['title'], doc.metadata['source'], doc.page_content)
+""".format(i, doc.metadata['title'], doc.metadata['source'], doc.metadata['score'], doc.metadata['add_date'], doc.page_content)
     # print(constructor)
     return constructor
 
