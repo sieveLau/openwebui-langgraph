@@ -4,7 +4,7 @@ from init_env import env
 from langchain_openai import OpenAIEmbeddings
 from transformers import AutoTokenizer
 from langchain_text_splitters import TokenTextSplitter
-from langchain.chat_models import init_chat_model
+from langchain_openai import ChatOpenAI
 from openai import OpenAI
 import redis
 from langchain_redis import RedisConfig, RedisVectorStore
@@ -20,11 +20,10 @@ class _Resource:
 
     def __init__(self):
         self.NUM_PREDICT = 6 * 1024
-        self.main_model = init_chat_model(
-            model=env.get("MAIN_MODEL_NAME"),
-            model_provider="openai",
-            base_url=env.get("BASE_URL"),
-            max_tokens=self.NUM_PREDICT,
+        self.main_model = ChatOpenAI(
+            model=env.get('MAIN_MODEL_NAME'),
+            openai_api_base=env.get('BASE_URL'),
+            openai_api_key=env.get('OPENAI_API_KEY')
         )
         self.openai_model = OpenAI(
             api_key=env.get("OPENAI_API_KEY"), base_url=env.get("BASE_URL")
