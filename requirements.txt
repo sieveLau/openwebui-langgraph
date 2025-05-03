@@ -12,4 +12,4 @@ langchain-openai
 transformers
 jinja2
 pytz
-redis
+langchain-chroma
