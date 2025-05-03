@@ -25,6 +25,10 @@ class _environment:
                 raise ValueError("OPENAI_API_KEY is missing")
             if 'DEBUG' not in self.store:
                 self.store['DEBUG'] = False
+            self.store["TZ"]='Asia/Hong_Kong'
+            self.store["DATETIME_FMT"]='%Y-%m-%d %H:%M:%S UTC%z'
+            self.store["RAG_DOC_EXPIRE_DAYS"]=7
+            self.store["RAG_DOC_CLEAN_DAYS_AGO"]=8
 
     def get(self, key):
         ret = self.store.get(key)
