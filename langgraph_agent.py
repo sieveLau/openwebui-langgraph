@@ -1,5 +1,4 @@
 from globalsource import resource
-# from init_env import env
 
 from typing import Annotated, TypedDict
 from langgraph.graph import START, StateGraph, END
@@ -13,12 +12,10 @@ from langchain_core.messages import trim_messages
 
 # ============ Define state for application BGN ============
 
-# FastAPI接收用的
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 # ============ Define state for application END ============
-
 
 tools = [web_search, search_local_knowledge, tool_time.get_current_time, tool_time.convert_time]
 tool_node = ToolNode(tools)
@@ -37,7 +34,7 @@ def call_model(state: State):
         messages,
         token_counter=tiktoken_counter,
         strategy="last",
-        max_tokens=16*1024-resource.NUM_PREDICT-50,
+        max_tokens=16*1024-resource.MIN_NUM_PREDICT,
         start_on="human",
         include_system=True,
     )
