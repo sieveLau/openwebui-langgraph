@@ -115,7 +115,7 @@ async def stream(inputs: State):
                             }
                         )
 
-    return StreamingResponse(event_stream(), media_type="application/json")
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
 @app.get("/")
