@@ -111,7 +111,7 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-MAX_ITERATIONS = 2
+MAX_ITERATIONS = 1
 builder = StateGraph(State)
 builder.add_node("draft", first_responder.respond)
 
@@ -143,7 +143,7 @@ graph = builder.compile()
 
 def get_query(user_question: str):
     events = graph.invoke(
-        {"messages": [("user", user_question)]}
+        {"messages": [("user", user_question+' /no_think')]}
     )
     try:
         return events['messages'][-1].tool_calls[0]['args']['answer']
