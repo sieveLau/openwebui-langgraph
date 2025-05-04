@@ -1,53 +1,18 @@
-# Connecting LangGraph to Open Web UI
+## Open WebUI LangGraph Agent
 
-This guide will walk you through setting up LangGraph and integrating it with Open Web UI.
+This is an example of how to use a LangGraph ReAct Agent to provide service for Open WebUI. The structure of this project is:
 
-## Prerequisites
+- Entry: `fastapi_server.py`, accepting requests and invoke the graph
+- The graph:
 
-- Python installed (preferably Python 3.11+)
-- Open Web UI installed and running
+  ![visualization of the graph](graph.png)
+- When the agent finishes calling tools and start to provide final answers, it yields SSE messages token by token to upstream.
 
-## Setup Steps
+The fixing node is a silly attempt in handling invalid tool calls resulting from calling a tool that accepts only one optional parameter, like `get_current_time` in `tool_time.py`. If the model decides to call the tool without any parameter, it will generate `"args": None`, but pydantic requires `args` to be a dict. That's why it will become an invalid tool call, and the current solution is to *made up* a tool call with `"args": {}`.
 
-1. **Get an API Key**  
-   Go to [Anthropic Console](https://console.anthropic.com/settings/keys) and generate an API key.
+`globalresource.py` provides many things, from chat model to vector store. It also holds tokenizer of the main model, so that other components can use it to estimate token counts. My backend is vLLM.
 
-2. **Create a `.env` File**  
-   - Copy `.env.example` and rename it to `.env`.  
-   - Replace the `ANTHROPIC_API_KEY` value with your key from step 1.
+## Credit
 
-3. **Install Dependencies**  
-   Run the following command to install required packages:
-
-   ```sh 
-   pip install -r requirements.txt
-   ```
-
-4. **Compile the Agent** 
-
-    Run:
-
-    ```sh
-    python langgraph_agent.py
-    ```
-
-5. **Start the Server**  
-   Launch the FastAPI server with:
-
-   ```sh
-   uvicorn fastapi_server:app --reload
-   ```
-
-6. **Add the Pipeline to Open Web UI**
-    Add `pipeline_stream.py` as a new pipeline in Open Web UI.
-
-7. **Select the Model**
-    Choose *LangGraph Agent (Stream)* as your model inside Open Web UI.
-
-8. **Start Chatting!**
-    Enjoy using LangGraph with Open Web UI.
-
-## Acknowledgments
-
-Special thanks to [@dukai289](https://github.com/dukai289) for creating the first version on which this solution is based and to [@PlebeiusGaragicus](https://github.com/PlebeiusGaragicus) for commenting of it in a discussion.  
-You can check out the original code here: [open-webui/pipelines#158](https://github.com/open-webui/pipelines/pull/158/files).
+- [Openwebui Pipelines](https://github.com/open-webui/pipelines)
+- [LangChain](https://www.langchain.com)
