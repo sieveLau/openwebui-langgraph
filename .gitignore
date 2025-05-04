@@ -18,3 +18,7 @@ simple_graph_builder.py
 .vscode/launch.json
 CACHEDIR.TAG
 test_tool.py
+
+bak/
+include/
+lib/
