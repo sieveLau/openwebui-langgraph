@@ -1,5 +1,5 @@
 import chromadb
-from init_env import env
+from my_langgraph_agent.init_env import env
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from transformers import AutoTokenizer

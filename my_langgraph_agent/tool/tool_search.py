@@ -1,9 +1,9 @@
-from globalsource import resource
+from my_langgraph_agent.globalsource import resource
 from langchain_core.tools import tool
 from typing import Annotated
+from my_langgraph_agent.component.component_websearch import search as web_search
 
 def search(query: str):
-    from component_websearch import search as web_search
     documents = web_search(query=query)
     _ = resource.add_documents(documents)
 

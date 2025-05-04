@@ -1,5 +1,5 @@
-from init_env import env
-import chroma_backend
+from my_langgraph_agent.init_env import env
+import my_langgraph_agent.vector_store.chroma_backend as chroma_backend
 
 from langchain_openai import OpenAIEmbeddings
 from transformers import AutoTokenizer
