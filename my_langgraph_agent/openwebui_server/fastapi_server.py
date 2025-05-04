@@ -1,4 +1,4 @@
-from my_langgraph_agent.init_env import env
+from my_langgraph_agent import env
 
 import json
 from my_langgraph_agent.langgraph_agent import app as graph, State

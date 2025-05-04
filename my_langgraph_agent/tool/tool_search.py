@@ -1,4 +1,4 @@
-from my_langgraph_agent.globalsource import resource
+from my_langgraph_agent import resource
 from langchain_core.tools import tool
 from typing import Annotated
 from my_langgraph_agent.component.component_websearch import search as web_search

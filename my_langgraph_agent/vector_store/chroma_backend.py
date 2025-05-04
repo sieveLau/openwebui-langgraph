@@ -1,8 +1,8 @@
 import chromadb
-from my_langgraph_agent.init_env import env
+from my_langgraph_agent import env
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer # type: ignore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -87,7 +87,7 @@ class ChromaStore:
     def get_documents(self, query, k=2):
         now = self._get_now()
         # 因为parent id可能重复，所以搜10个，后面再取k个最相关的
-        small_docs, scores = zip(*self.vector_store_child.similarity_search_with_score(query, k=10, filter={"add_ts": {"$gt": (now - timedelta(days=env.get('RAG_DOC_EXPIRE_DAYS'))).timestamp()}}))
+        small_docs, scores = zip(*self.vector_store_child.similarity_search_with_score(query, k=10, filter={"add_ts": {"$gt": (now - timedelta(days=env.get('RAG_DOC_EXPIRE_DAYS'))).timestamp()}})) # type: ignore
         min_scores: dict[str, float] = {}
         # Step 2: 遍历 small_docs 和 score，更新字典
         for doc, sc in zip(small_docs, scores):

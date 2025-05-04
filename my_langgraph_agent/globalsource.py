@@ -1,8 +1,8 @@
-from my_langgraph_agent.init_env import env
-import my_langgraph_agent.vector_store.chroma_backend as chroma_backend
+from .init_env import env
+from my_langgraph_agent.vector_store import ChromaStore
 
 from langchain_openai import OpenAIEmbeddings
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer # type: ignore
 from langchain_openai import ChatOpenAI
 from openai import OpenAI
 
@@ -11,13 +11,13 @@ class _Resource:
     def __init__(self):
         self.main_model = ChatOpenAI(
             model=env.get('MAIN_MODEL_NAME'),
-            openai_api_base=env.get('BASE_URL'),
-            openai_api_key=env.get('OPENAI_API_KEY')
+            base_url=env.get('BASE_URL'),
+            api_key=env.get('OPENAI_API_KEY')
         )
         self.openai_model = OpenAI(
             api_key=env.get("OPENAI_API_KEY"), base_url=env.get("BASE_URL")
         )
-        self._Chroma = chroma_backend.ChromaStore()
+        self._Chroma = ChromaStore()
         self.embed = OpenAIEmbeddings(
             base_url=env.get("EMBEDER_URL"),
             model=env.get("LOCAL_EMBED_TOKENIZER_PATH"),

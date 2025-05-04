@@ -1,4 +1,4 @@
-from my_langgraph_agent.globalsource import resource
+from my_langgraph_agent import resource
 
 from langchain_core.messages import BaseMessage
 from typing import List

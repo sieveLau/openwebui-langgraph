@@ -1,5 +1,5 @@
 from langchain_core.documents import Document
-from my_langgraph_agent.init_env import env
+from my_langgraph_agent import env
 
 def _fake_search(query: str):
     """Fake search function for testing purposes."""
