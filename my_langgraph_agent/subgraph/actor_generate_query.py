@@ -1,9 +1,9 @@
-from globalsource import resource
+from my_langgraph_agent.globalsource import resource
 from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import ValidationError
-from tool_time import get_current_time
+from my_langgraph_agent.tool.tool_time import get_current_time
 from typing import Literal
 
 from langgraph.graph import END, StateGraph, START

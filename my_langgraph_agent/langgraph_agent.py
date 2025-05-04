@@ -1,15 +1,15 @@
-from globalsource import resource
+from my_langgraph_agent.globalsource import resource
+from my_langgraph_agent.component.component_helpers import tiktoken_counter
+from my_langgraph_agent.tool.tool_search import web_search_returning_string as web_search
+from my_langgraph_agent.tool.tool_local_search import search_local_knowledge
+import my_langgraph_agent.tool.tool_time as tool_time
+from my_langgraph_agent.component.trim_msg import trim_messages
 
 from typing import Annotated, TypedDict
 from langgraph.graph import START, StateGraph, END
 from langgraph.graph.message import add_messages
-from component_helpers import tiktoken_counter
-from tool_search import web_search_returning_string as web_search
-from tool_local_search import search_local_knowledge
-import tool_time
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import RemoveMessage, ToolCall
-from trim_msg import trim_messages
 
 # ============ Define state for application BGN ============
 
@@ -49,13 +49,13 @@ def fixing(state: State):
     )
     last_message.tool_calls=new_tool_call,
     last_message.invalid_tool_calls=[]
-    print(last_message)
+    # print(last_message)
     return {"messages": [last_message]}
 
 def should_continue(state: State):
     messages = state["messages"]
     last_message = messages[-1]
-    print(last_message)
+    # print(last_message)
     if last_message.tool_calls:
         return "tools"
     ## Reroute to a fixing node to manipulate the record to create a valid tool call.

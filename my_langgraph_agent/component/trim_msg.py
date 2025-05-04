@@ -8,8 +8,8 @@ def trim_messages(
     max_tokens: int,
     tiktoken_counter
 ) -> List[BaseMessage]:
-    print(messages)
-    print('-'*8)
+    # print(messages)
+    # print('-'*8)
     # Step 1: 识别必须保留的索引（SystemMessage 和最后一个 HumanMessage）
     must_keep_indices = list()
     last_human_index = -1

@@ -1,20 +1,34 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/venv
+# Edit at https://www.toptal.com/developers/gitignore?templates=venv
+
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json
+
+# End of https://www.toptal.com/developers/gitignore/api/venv
+
 test*
-/.env
-
-__pycache__
-bin/
-include/
-lib/python*
-lib64
-share
-
+*.ipynb
+*.log
 fake_search.json
-
-*.bak
-etc/
-
-chroma/
-simple_graph_builder.py
-.vscode/launch.json
+/check_sensitive*
 CACHEDIR.TAG
-test_tool.py
+.env
+share/man
+/chroma/
+bak
+*pyc*
+etc/jupyter
+*.bak
+.vscode

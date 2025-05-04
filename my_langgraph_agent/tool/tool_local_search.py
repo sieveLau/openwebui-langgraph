@@ -1,4 +1,4 @@
-from globalsource import resource
+from my_langgraph_agent.globalsource import resource
 from typing import Annotated
 from langchain_core.tools import tool
 
