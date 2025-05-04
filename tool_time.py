@@ -6,7 +6,7 @@ from langchain_core.tools import render_text_description
 from pydantic import BaseModel, Field
 
 class GetCurrentTimeInput(BaseModel):
-    timezone: str = Field(..., description="A string representing the timezone (e.g., 'UTC', 'America/Los_Angeles').")
+    timezone: Optional[str] = Field(default=None, description="A string representing the timezone (e.g., 'UTC', 'America/Los_Angeles').")
 
 class ConvertTimeInput(BaseModel):
     source_time: str = Field(
@@ -20,12 +20,12 @@ class ConvertTimeInput(BaseModel):
 
 @tool(args_schema=GetCurrentTimeInput)
 def get_current_time(
-        timezone: str
+        timezone: Optional[str] = None
     ) -> str:
     """Gets the current date and time formatted as a string.
 
     Retrieves the current date and time for the specified timezone.
-    If no timezone is provided, you should use UTC timezone.
+    If no timezone is provided, the system's local time is used.
     
     Returns:
         str: The current date and time formatted as 'YYYY-MM-DD HH:MM:SS <offset>'.
@@ -33,6 +33,8 @@ def get_current_time(
     Examples:
         >>> get_current_time('UTC')
         '2025-04-28 14:23:45 +0000'
+        >>> get_current_time()
+        '2025-04-28 07:23:45 -0700'
     """
     if timezone:
         tz = pytz.timezone(timezone)
