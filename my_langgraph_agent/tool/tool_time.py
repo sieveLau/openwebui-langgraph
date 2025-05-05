@@ -40,7 +40,7 @@ def get_current_time(
         tz = pytz.timezone(timezone)
         current_time = datetime.now(tz)
     else:
-        current_time = datetime.now()
+        current_time = datetime.now().astimezone()
 
     return current_time.strftime("%Y-%m-%d %H:%M:%S %z")
 
