@@ -32,3 +32,4 @@ bak
 etc/jupyter
 *.bak
 .vscode
+/*.py

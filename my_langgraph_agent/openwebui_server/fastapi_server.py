@@ -1,10 +1,9 @@
 from my_langgraph_agent import env
 
 import json
-from my_langgraph_agent.langgraph_agent import app as graph, State
+from my_langgraph_agent.langgraph_agent import app as graph, GraphState, FastAPIState
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
 import time
 
 
@@ -19,7 +18,7 @@ app = FastAPI(
 
 
 @app.post("/openwebui-pipelines/api")
-async def main(inputs: State):
+async def main(inputs: FastAPIState):
     response = await graph.ainvoke(inputs)
     if env.get("DEBUG"):
         print(response)
@@ -27,9 +26,17 @@ async def main(inputs: State):
 
 
 @app.post("/openwebui-pipelines/api/stream")
-async def stream(inputs: State):
+async def stream(inputs: FastAPIState):
     async def event_stream():
         start_time = time.time()
+        state: GraphState = {
+            "messages": inputs.messages,
+            "messages_with_think": inputs.messages,
+            "id" : "",
+            "model" : "",
+            "created": int(start_time),
+            "finish_reason": ""
+        }
         last_time = start_time
         valid_first_token = False
         yield dict_to_sse(
@@ -46,10 +53,10 @@ async def stream(inputs: State):
         if env.get("DEBUG"):
             print(f"\nReceived inputs: {inputs}\n")
         async for msg, metadata in graph.astream(
-            input=inputs, stream_mode="messages"
+            input=state, stream_mode="messages"
         ):
             # print(metadata, flush=True)
-            if metadata.get("langgraph_node", "") != "agent":
+            if metadata.get("langgraph_node", "") != "agent": # type: ignore
                 continue
             if not valid_first_token:
                 current_time = time.time()
@@ -67,8 +74,8 @@ async def stream(inputs: State):
                             }
                         }
                     )
-            if msg.content:
-                if not valid_first_token and (len(msg.content.strip("\n")) == 0):
+            if msg.content: # type: ignore
+                if not valid_first_token and (len(msg.content.strip("\n")) == 0): # type: ignore
                     current_time = time.time()
                     elapsed = current_time - last_time
                     if elapsed > 2:
@@ -108,7 +115,7 @@ async def stream(inputs: State):
                                     {
                                         "delta": {
                                             "role": "assistant",
-                                            "content": msg.content,
+                                            "content": msg.content, # type: ignore
                                         }
                                     }
                                 ]
