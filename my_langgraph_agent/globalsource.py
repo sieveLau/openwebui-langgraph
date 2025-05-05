@@ -9,10 +9,14 @@ from openai import OpenAI
 class _Resource:
     MIN_NUM_PREDICT = 4*1024
     def __init__(self):
+        extra_body = {
+            "chat_template_kwargs": {"enable_thinking": True}
+        }
         self.main_model = ChatOpenAI(
             model=env.get('MAIN_MODEL_NAME'),
             base_url=env.get('BASE_URL'),
-            api_key=env.get('OPENAI_API_KEY')
+            api_key=env.get('OPENAI_API_KEY'),
+            extra_body=extra_body
         )
         self.openai_model = OpenAI(
             api_key=env.get("OPENAI_API_KEY"), base_url=env.get("BASE_URL")
