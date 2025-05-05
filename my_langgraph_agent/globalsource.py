@@ -2,21 +2,21 @@ from .init_env import env
 from my_langgraph_agent.vector_store import ChromaStore
 
 from langchain_openai import OpenAIEmbeddings
-from transformers import AutoTokenizer # type: ignore
+from transformers import AutoTokenizer  # type: ignore
 from langchain_openai import ChatOpenAI
 from openai import OpenAI
 
+
 class _Resource:
-    MIN_NUM_PREDICT = 4*1024
+    MIN_NUM_PREDICT = 4 * 1024
+
     def __init__(self):
-        extra_body = {
-            "chat_template_kwargs": {"enable_thinking": True}
-        }
+        extra_body = {"chat_template_kwargs": {"enable_thinking": True}}
         self.main_model = ChatOpenAI(
-            model=env.get('MAIN_MODEL_NAME'),
-            base_url=env.get('BASE_URL'),
-            api_key=env.get('OPENAI_API_KEY'),
-            extra_body=extra_body
+            model=env.get("MAIN_MODEL_NAME"),
+            base_url=env.get("BASE_URL"),
+            api_key=env.get("OPENAI_API_KEY"),
+            extra_body=extra_body,
         )
         self.openai_model = OpenAI(
             api_key=env.get("OPENAI_API_KEY"), base_url=env.get("BASE_URL")
@@ -29,7 +29,7 @@ class _Resource:
             api_key=env.get("EMBEDER_API_KEY"),
             tiktoken_enabled=False,
         )
-        
+
         self.main_model_tokenizer = AutoTokenizer.from_pretrained(
             env.get("LOCAL_TOKENIZER_PATH"), local_files_only=True
         )

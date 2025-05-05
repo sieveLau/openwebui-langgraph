@@ -1,32 +1,36 @@
 from langchain_core.tools import tool
 from datetime import datetime
 import pytz
-from typing import Optional, Annotated
+from typing import Optional
 from langchain_core.tools import render_text_description
 from pydantic import BaseModel, Field
 
+
 class GetCurrentTimeInput(BaseModel):
-    timezone: Optional[str] = Field(default=None, description="A string representing the timezone (e.g., 'UTC', 'America/Los_Angeles').")
+    timezone: Optional[str] = Field(
+        default=None,
+        description="A string representing the timezone (e.g., 'UTC', 'America/Los_Angeles').",
+    )
+
 
 class ConvertTimeInput(BaseModel):
     source_time: str = Field(
-        ...,
-        description="The source time in the format '%Y-%m-%d %H:%M:%S %z', e.g., '2025-04-28 07:23:45 +0800'."
+        default=...,
+        description="The source time in the format '%Y-%m-%d %H:%M:%S %z', e.g., '2025-04-28 07:23:45 +0800'.",
     )
     target_timezone: str = Field(
-        ...,
-        description="The IANA timezone name to convert the time into, e.g., 'America/New_York'."
+        default=...,
+        description="The IANA timezone name to convert the time into, e.g., 'America/New_York'.",
     )
 
+
 @tool(args_schema=GetCurrentTimeInput)
-def get_current_time(
-        timezone: Optional[str] = None
-    ) -> str:
+def get_current_time(timezone: Optional[str] = None) -> str:
     """Gets the current date and time formatted as a string.
 
     Retrieves the current date and time for the specified timezone.
     If no timezone is provided, the system's local time is used.
-    
+
     Returns:
         str: The current date and time formatted as 'YYYY-MM-DD HH:MM:SS <offset>'.
 
@@ -43,6 +47,7 @@ def get_current_time(
         current_time = datetime.now().astimezone()
 
     return current_time.strftime("%Y-%m-%d %H:%M:%S %z")
+
 
 @tool(args_schema=ConvertTimeInput)
 def convert_time(source_time: str, target_timezone: str) -> str:
@@ -66,9 +71,10 @@ def convert_time(source_time: str, target_timezone: str) -> str:
     except Exception as e:
         raise ValueError(f"Failed to convert time: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     rendered_tools = render_text_description([get_current_time, convert_time])
     print(rendered_tools)
-    print(get_current_time.args_schema.model_json_schema())
-    print('-'*8)
-    print(convert_time.args_schema.model_json_schema())
+    print(get_current_time.args_schema.model_json_schema())  # type: ignore
+    print("-" * 8)
+    print(convert_time.args_schema.model_json_schema())  # type: ignore
