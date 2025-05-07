@@ -30,7 +30,7 @@ Added Date: {}
 """.format(
             i,
             doc.metadata["title"],
-            doc.metadata["score"],
+            doc.metadata["source"],
             doc.metadata["add_date"],
             doc.page_content,
         )
